@@ -40,6 +40,33 @@
           </ul>
         </section>
 
+        <section class="mt-4">
+          <h4>Contoh Penggunaan Alat Secara Aman</h4>
+          <h5>Nmap — discovery &amp; service enumeration</h5>
+          <p>Contoh perintah yang umum dipakai untuk enumerasi di lab terkontrol:</p>
+          <pre><code># pindai port umum dan detect service
+nmap -p 1-65535 -sV --version-intensity 0 192.168.56.101
+</code></pre>
+          <p>Gunakan output untuk merencanakan observasi lebih lanjut dan pencatatan versi vulnerable components.</p>
+
+          <h5>Wireshark/Tshark — capture dan filter</h5>
+          <p>Contoh display filter untuk melihat hanya traffic HTTP:</p>
+          <pre><code>http && ip.addr == 192.168.56.101
+</code></pre>
+
+          <h5>Burp Suite (Community) — Testing aplikasi web di lab</h5>
+          <p>Konfigurasi singkat: atur browser untuk menggunakan Burp sebagai proxy, hanya aktifkan intercept untuk request ke host lab yang diizinkan, dan catat semua request/responses untuk analisis.</p>
+
+          <h5>Snort — rule contoh deteksi pola (IDS)</h5>
+          <p>Contoh rule sederhana untuk mendeteksi pola query yang mengandung kata kunci SQL umum (untuk tujuan monitoring di lingkungan lab):</p>
+          <pre><code>alert tcp any any -> 192.168.56.101 80 (msg:"POTENTIAL SQL KEYWORD in HTTP"; content:"select"; nocase; http_client_body; sid:1000001; rev:1;)
+</code></pre>
+          <p>Catatan: rule di atas bersifat heuristik dan bisa menimbulkan false positives; gunakan bersama aturan lain dan tuning kontekstual.</p>
+
+          <h5>Wazuh / SIEM — korelasi dan alerting</h5>
+          <p>Gunakan Wazuh untuk mengumpulkan log host (syslog, application logs) dan korelasikan event dari IDS untuk membangun workflow deteksi dan respons.</p>
+        </section>
+
         <div class="mt-4"><a class="btn btn-outline-primary" href="index.html">← Kembali ke Beranda</a></div>
       </div>
     </main>

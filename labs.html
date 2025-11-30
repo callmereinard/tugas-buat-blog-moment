@@ -38,6 +38,46 @@
           </ol>
         </section>
 
+        <section class="mt-4">
+          <h4>Setting Lab yang Aman (ringkasan)</h4>
+          <ol>
+            <li>Persiapkan VirtualBox/VMware dan gunakan jaringan <em>Host-Only</em> atau internal network agar lab tidak memiliki akses ke internet publik kecuali diperlukan.</li>
+            <li>Gunakan mesin target yang dikenal rentan (mis. Metasploitable, DVWA) hanya di lingkungan terisolasi dan dengan snapshot sebelum eksperimen.</li>
+            <li>Siapkan mesin observability (tcpdump/wireshark, ELK/Wazuh) untuk menangkap trafik dan log selama eksperimen.</li>
+            <li>Gunakan akun non-privileged untuk pengujian aplikasi bila memungkinkan, kecuali sedang menguji eskalasi hak akses di lab yang terkontrol.</li>
+          </ol>
+        </section>
+
+        <section class="mt-4">
+          <h4>Contoh Alur Kerja: Recon dan Monitoring (non-aksi)</h4>
+          <p>Contoh berikut menunjukkan langkah-langkah observasi dan rekognisi yang aman pada target lab Anda.</p>
+          <h5>1) Discovery - Nmap (contoh)</h5>
+          <p>Perintah berikut hanya untuk target yang Anda miliki atau yang diizinkan untuk diuji.</p>
+          <pre><code># cek versi service dan port terbuka (lab terisolasi)
+nmap -sV -p- -T4 192.168.56.101
+</code></pre>
+          <p>Keterangan: <code>-sV</code> mencoba mendeteksi versi service; <code>-p-</code> memindai semua port; gunakan level timing yang sesuai.</p>
+
+          <h5>2) Packet Capture (tcpdump)</h5>
+          <pre><code># tangkap paket ke file pcap
+sudo tcpdump -i eth0 -w lab-capture.pcap
+</code></pre>
+          <p>Analisis file <code>lab-capture.pcap</code> di Wireshark atau dengan <code>tshark</code> untuk mempelajari pola trafik. Pastikan capture dijalankan di jaringan lab yang terisolasi.</p>
+
+          <h5>3) Analisis Hasil &amp; Dokumentasi</h5>
+          <p>Catat temuan: port/service, bukti log, snapshot VM yang relevan, dan rekomendasi mitigasi. Fokus pada apa yang perlu diperbaiki (patch, konfigurasi, network segmentation).</p>
+        </section>
+
+        <section class="mt-4">
+          <h4>CTF — Pendekatan Penyelesaian Challenge</h4>
+          <ol>
+            <li>Baca deskripsi secara seksama dan tentukan tipe challenge (web, crypto, forensics, binary).</li>
+            <li>Kumpulkan informasi: fingerprinting service, enumerasi direktori, baca source jika tersedia.</li>
+            <li>Pikirkan pendekatan mitigasi dan pembelajaran: setiap challenge harus menghasilkan pemahaman tentang bagaimana memperbaiki kerentanan, bukan sekadar exploit.</li>
+            <li>Dokumentasikan langkah analitis Anda untuk pembelajaran dan sharing internal (tanpa mempublikasikan exploit lengkap jika berpotensi disalahgunakan).</li>
+          </ol>
+        </section>
+
         <div class="mt-4"><a class="btn btn-outline-primary" href="index.html">← Kembali ke Beranda</a></div>
       </div>
     </main>
