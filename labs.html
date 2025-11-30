@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Labs &amp; CTF Writeups — Blog Keamanan Jaringan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="header-area">
+      <div class="container py-3 d-flex justify-content-between align-items-center">
+        <a href="index.html" class="logo text-decoration-none"><h1 class="m-0">Blog Praktikum</h1></a>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container">
+        <h1>Labs &amp; CTF Writeups</h1>
+        <p class="lead">Ringkasan lingkungan lab, tujuan pembelajaran, dan analisis hasil (fokus pada pembelajaran dan mitigasi). Semua contoh dijalankan di lingkungan terisolasi.</p>
+
+        <section class="mt-4">
+          <h3>Daftar Topik</h3>
+          <ul>
+            <li><a href="labs-metasploitable.html">Metasploitable 2 — Studi Kasus & Observabilitas</a></li>
+            <li><a href="labs-dvwa.html">DVWA — Konfigurasi & Pelajaran Keamanan Aplikasi Web</a></li>
+            <li><a href="labs-htb.html">HackTheBox — Pendekatan Pemecahan Challenge</a></li>
+          </ul>
+        </section>
+
+        <section class="mt-4">
+          <h4>Prinsip Operasional untuk Lab</h4>
+          <ol>
+            <li>Gunakan host terpisah (VM/physical) dan VLAN/host-only networks untuk mencegah kebocoran ke jaringan produksi.</li>
+            <li>Snapshot sebelum dan setelah eksperimen untuk reproduksi dan pembersihan cepat.</li>
+            <li>Instrumentasi: aktifkan pcap capture, sistem logging, dan monitoring untuk membuat artefak riset.</li>
+            <li>Dokumentasikan temuan dengan fokus pada mitigasi dan rekomendasi teknis.</li>
+          </ol>
+        </section>
+
+        <div class="mt-4"><a class="btn btn-outline-primary" href="index.html">← Kembali ke Beranda</a></div>
+      </div>
+    </main>
+
+    <footer class="mt-5"><div class="container text-center small">&copy; 2025 Reinardus — Labs &amp; CTF</div></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
