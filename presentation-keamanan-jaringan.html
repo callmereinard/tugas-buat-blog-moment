@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ringkasan Presentasi — Keamanan Jaringan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="header-area">
+      <div class="container py-3 d-flex justify-content-between align-items-center">
+        <a href="index.html" class="logo text-decoration-none"><h1 class="m-0">Blog Praktikum</h1></a>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container">
+        <h1>Ringkasan Presentasi — Keamanan Jaringan</h1>
+        <p class="lead">Ringkasan aman dari presentasi proyek Security Monitoring System (Honeypot + SIEM + Network Analysis). Konten ini merangkum konsep dan arsitektur — tidak berisi instruksi menyerang.</p>
+
+        <section class="mt-4">
+          <h4>Arsitektur Tingkat Tinggi</h4>
+          <ul>
+            <li>Honeypot (Cowrie) pada VM terisolasi untuk mencatat aktivitas SSH/Telnet.</li>
+            <li>Wazuh Agent di Honeypot mengirim log ke Wazuh Manager untuk analitik & alert.</li>
+            <li>Elastic Stack (Elasticsearch + Kibana) menyimpan dan memvisualisasikan data.</li>
+            <li>Wireshark/Tshark digunakan sebagai alat analisis trafik untuk investigasi.</li>
+          </ul>
+        </section>
+
+        <section class="mt-4">
+          <h4>Komponen & Tujuan Pembelajaran</h4>
+          <ul>
+            <li><strong>Cowrie:</strong> memahami pola brute force dan command behavior di lingkungan aman.</li>
+            <li><strong>Wazuh:</strong> korelasi event, pembuatan aturan, dan praktik deteksi insiden.</li>
+            <li><strong>Wireshark:</strong> inspeksi paket dan konversasi jaringan untuk forensik.</li>
+            <li><strong>Dashboard:</strong> membuat panel metrik serangan, kredensial populer, dan timeline.</li>
+          </ul>
+        </section>
+
+        <section class="mt-4">
+          <h4>Best Practices (Non-aksi)</h4>
+          <ul>
+            <li>Isolasi jaringan (host-only/VLAN), snapshot VM sebelum eksperimen.</li>
+            <li>Batasi akses dashboard; aktifkan HTTPS dan gunakan kredensial kuat.</li>
+            <li>Rotasi dan kompres log; gunakan log rotation untuk menjaga kapasitas disk.</li>
+            <li>Backup konfigurasi penting dan catat perubahan (change log).</li>
+          </ul>
+        </section>
+
+        <section class="mt-4">
+          <h4>Bacaan Lanjutan</h4>
+          <ul>
+            <li><a href="https://cainvsilf.github.io/cainvsilf-archive/tutorials/presentation-keamanan-jaringan/" target="_blank" rel="noopener">Presentasi Keamanan Jaringan (arsip)</a></li>
+            <li><a href="tools-cowrie.html">Cowrie Honeypot (ringkasan)</a></li>
+            <li><a href="tools-wazuh.html">Wazuh SIEM (ringkasan)</a></li>
+            <li><a href="tools-snort.html">Snort IDS (ringkasan)</a></li>
+          </ul>
+          <p class="text-muted">Ringkasan ini hanya untuk pembelajaran etis di lab terkontrol.</p>
+        </section>
+
+        <div class="mt-4"><a class="btn btn-outline-primary" href="index.html">← Kembali ke Beranda</a></div>
+      </div>
+    </main>
+
+    <footer class="mt-5"><div class="container text-center small">&copy; 2025 Reinardus — Materi presentasi (ringkasan)</div></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+  </html>
