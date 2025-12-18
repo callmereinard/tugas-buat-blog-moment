@@ -10,89 +10,247 @@
   <body>
     <header class="header-area"><div class="container py-3"><a href="index.html" class="logo text-decoration-none"><h1 class="m-0">Blog Praktikum</h1></a></div></header>
     <main class="section"><div class="container">
-      <h1>Cowrie — Honeypot (Panduan Ringkas)</h1>
-      <p class="lead">Materi tambahan telah dirapikan: fitur utama, instalasi, konfigurasi, penggunaan, logging, dan troubleshooting untuk lab terisolasi.</p>
+      <h1>Cowrie Honeypot — Dokumentasi Lengkap</h1>
+      <p class="lead">Dokumentasi komprehensif Cowrie dari materi praktikum: fitur, instalasi, konfigurasi, usage, logging, troubleshooting, dan advanced usage.</p>
 
       <section class="mt-3">
-        <h4>Overview &amp; Fitur</h4>
+        <h4>Overview</h4>
+        <p>Cowrie adalah medium to high interaction SSH dan Telnet honeypot yang dirancang untuk logging brute force attacks dan shell interaction yang dilakukan oleh attacker. Cowrie sangat berguna untuk cybersecurity research dan threat intelligence.</p>
+      </section>
+
+      <section class="mt-3">
+        <h4>Features</h4>
         <ul>
-          <li>SSH/Telnet Honeypot: emulasi layanan dan interaksi penyerang.</li>
-          <li>Command Logging &amp; Session Recording.</li>
-          <li>Fake File System &amp; File Download Capture.</li>
+          <li><strong>SSH/Telnet Honeypot:</strong> Emulasi layanan SSH dan Telnet</li>
+          <li><strong>Command Logging:</strong> Merekam semua command yang dijalankan attacker</li>
+          <li><strong>File Download Capture:</strong> Menyimpan file yang di-download oleh attacker</li>
+          <li><strong>Fake File System:</strong> Menyediakan fake filesystem yang realistis</li>
+          <li><strong>Session Recording:</strong> Merekam seluruh session attacker</li>
         </ul>
       </section>
 
       <section class="mt-3">
-        <h4>Instalasi (Ringkas)</h4>
-        <pre><code># Clone versi stabil
-git clone -b v2.4.0 https://github.com/cowrie/cowrie
+        <h4>Installation</h4>
+        <h5>Prerequisites</h5>
+        <p>Pastikan Anda memiliki:</p>
+        <ul>
+          <li>Python 3.7 atau lebih tinggi</li>
+          <li>Git</li>
+          <li>Virtual environment support</li>
+        </ul>
+
+        <h5>Installation Steps</h5>
+        <h6>1. Clone Repository</h6>
+        <pre><code>git clone -b v2.4.0 https://github.com/cowrie/cowrie
 cd cowrie
+</code></pre>
 
-# Virtual environment (Linux/macOS)
-python3 -m venv cowrie-env
+        <h6>2. Setup Virtual Environment</h6>
+        <p><strong>Linux/macOS:</strong></p>
+        <pre><code>python3 -m venv cowrie-env
 source cowrie-env/bin/activate
+</code></pre>
 
-# Virtual environment (Windows PowerShell)
-python -m venv cowrie-env
+        <p><strong>Windows PowerShell:</strong></p>
+        <pre><code>python -m venv cowrie-env
 .\cowrie-env\Scripts\Activate.ps1
+</code></pre>
 
-# Dependencies
-pip install --upgrade pip
+        <h6>3. Install Dependencies</h6>
+        <pre><code>pip install --upgrade pip
 pip install -r requirements.txt
 pip install -e .
 </code></pre>
       </section>
 
       <section class="mt-3">
-        <h4>Konfigurasi Dasar</h4>
+        <h4>Configuration</h4>
+        <h5>Basic Configuration</h5>
+        <p>Edit file etc/cowrie.cfg untuk konfigurasi dasar:</p>
         <pre><code>[honeypot]
+# Hostname untuk fake system
 hostname = server
+# Port untuk SSH honeypot (default: 2222)
 listen_endpoints = tcp:2222:interface=0.0.0.0
 
 [output_json]
+# Enable JSON logging
 enabled = true
 </code></pre>
-        <p>Opsional: port-forwarding ke 22 pada host (Linux) dengan iptables di lab terisolasi.</p>
-      </section>
 
-      <section class="mt-3">
-        <h4>Penggunaan</h4>
-        <pre><code># Start/Stop/Status
-cowrie start
-cowrie stop
-cowrie status
+        <h5>Port Forwarding (Optional)</h5>
+        <p>Untuk menjalankan Cowrie pada port 22 (SSH default), gunakan port forwarding:</p>
+        <pre><code># Linux/Unix
+sudo iptables -t nat -A PREROUTING -p tcp --dport 22 -j REDIRECT --to-port 2222
 </code></pre>
-        <p>Anda dapat membuat skrip/alias untuk restart cepat dan melihat log real-time.</p>
       </section>
 
       <section class="mt-3">
-        <h4>Lokasi Log &amp; Analisis</h4>
+        <h4>Usage</h4>
+        <h5>Starting Cowrie</h5>
+        <h6>Method 1: Manual Start</h6>
+        <pre><code># Activate virtual environment
+source cowrie-env/bin/activate
+
+# Start Cowrie
+cowrie start
+</code></pre>
+
+        <h6>Method 2: Using Restart Script</h6>
+        <p>Buat script untuk restart Cowrie dengan mudah:</p>
+        <pre><code>cat > ~/cowrie/restart_cowrie.sh <<'EOF'
+#!/bin/bash
+source ~/cowrie/cowrie-env/bin/activate
+kill $(ps aux | grep twistd | grep -v grep | awk '{print $2}') 2>/dev/null
+rm -f ~/cowrie/cowrie-env/var/run/cowrie.pid
+cowrie start
+EOF
+
+chmod +x ~/cowrie/restart_cowrie.sh
+</code></pre>
+
+        <h6>Method 3: Using Alias</h6>
+        <p>Tambahkan alias ke .bashrc untuk kemudahan:</p>
+        <pre><code># Alias untuk start Cowrie
+grep -qxF "alias cowrie-start='~/cowrie/restart_cowrie.sh'" ~/.bashrc || \
+echo "alias cowrie-start='~/cowrie/restart_cowrie.sh'" >> ~/.bashrc
+
+# Alias untuk melihat log
+grep -qxF "alias cowrie-log='tail -f ~/cowrie/var/log/cowrie/cowrie.log'" ~/.bashrc || \
+echo "alias cowrie-log='tail -f ~/cowrie/var/log/cowrie/cowrie.log'" >> ~/.bashrc
+
+# Reload bashrc
+source ~/.bashrc
+</code></pre>
+
+        <p>Setelah itu, Anda bisa menggunakan:</p>
+        <pre><code>cowrie-start  # Untuk start/restart Cowrie
+cowrie-log    # Untuk melihat log real-time
+</code></pre>
+
+        <h5>Stopping Cowrie</h5>
+        <pre><code>cowrie stop
+</code></pre>
+
+        <h5>Checking Status</h5>
+        <pre><code>cowrie status
+</code></pre>
+      </section>
+
+      <section class="mt-3">
+        <h4>Log Analysis</h4>
+        <h5>Log Locations</h5>
+        <p>Cowrie menyimpan log di beberapa lokasi:</p>
         <ul>
-          <li>Main Log: <em>var/log/cowrie/cowrie.log</em>; JSON: <em>var/log/cowrie/cowrie.json</em></li>
-          <li>Downloads: <em>var/lib/cowrie/downloads/</em>; TTY: <em>var/lib/cowrie/tty/</em></li>
+          <li><strong>Main Log:</strong> var/log/cowrie/cowrie.log</li>
+          <li><strong>JSON Log:</strong> var/log/cowrie/cowrie.json</li>
+          <li><strong>Downloads:</strong> var/lib/cowrie/downloads/ (file yang di-download attacker)</li>
+          <li><strong>TTY Logs:</strong> var/lib/cowrie/tty/ (session recordings)</li>
         </ul>
-        <pre><code># Contoh analisis dengan jq (Linux)
+
+        <h5>Viewing Logs</h5>
+        <h6>Real-time Log Monitoring</h6>
+        <pre><code>tail -f var/log/cowrie/cowrie.log
+</code></pre>
+
+        <p>Atau gunakan alias:</p>
+        <pre><code>cowrie-log
+</code></pre>
+
+        <h6>Analyzing JSON Logs</h6>
+        <pre><code># Melihat login attempts
 cat var/log/cowrie/cowrie.json | jq 'select(.eventid=="cowrie.login.success")'
+
+# Melihat commands yang dijalankan
 cat var/log/cowrie/cowrie.json | jq 'select(.eventid=="cowrie.command.input")'
 </code></pre>
+
+        <h5>Replaying Sessions</h5>
+        <p>Untuk replay session TTY yang terekam:</p>
+        <pre><code># List available sessions
+ls var/lib/cowrie/tty/
+
+# Replay session
+bin/playlog var/lib/cowrie/tty/[session-id]
+</code></pre>
       </section>
 
       <section class="mt-3">
-        <h4>Troubleshooting (Umum)</h4>
+        <h4>Security Considerations</h4>
+        <h5>Security Best Practices</h5>
         <ul>
-          <li>Port in use: periksa dengan <em>netstat</em> dan hentikan proses terkait.</li>
-          <li>Permission: jalankan sebagai non-root; cek izin file environment.</li>
-          <li>Virtualenv hilang: buat ulang venv dan install ulang dependencies.</li>
+          <li>Jangan jalankan Cowrie sebagai root user</li>
+          <li>Isolate honeypot dari production network</li>
+          <li>Monitor honeypot secara regular</li>
+          <li>Backup log secara berkala</li>
+          <li>Gunakan firewall untuk membatasi akses</li>
         </ul>
+
+        <h5>Common Commands</h5>
+        <pre><code># Start Cowrie
+cowrie start
+
+# Stop Cowrie
+cowrie stop
+
+# Restart Cowrie
+cowrie restart
+
+# Check status
+cowrie status
+
+# View logs
+tail -f var/log/cowrie/cowrie.log
+
+# Check downloaded files
+ls -lh var/lib/cowrie/downloads/
+</code></pre>
       </section>
 
       <section class="mt-3">
-        <h4>Best Practices Keamanan</h4>
-        <ul>
-          <li>Jalankan di segment jaringan terisolasi; jangan di produksi.</li>
-          <li>Monitor dan backup log secara berkala.</li>
-          <li>Batasi akses dan amankan storage log.</li>
-        </ul>
+        <h4>Troubleshooting</h4>
+        <h5>Issue: Port Already in Use</h5>
+        <pre><code># Check what's using the port
+netstat -tulpn | grep 2222
+
+# Kill the process if needed
+kill -9 &lt;PID&gt;
+</code></pre>
+
+        <h5>Issue: Permission Denied</h5>
+        <pre><code># Make sure you're not running as root
+whoami
+
+# Check file permissions
+ls -la cowrie-env/
+</code></pre>
+
+        <h5>Issue: Virtual Environment Not Found</h5>
+        <pre><code># Recreate virtual environment
+python3 -m venv cowrie-env
+source cowrie-env/bin/activate
+pip install -r requirements.txt
+</code></pre>
+      </section>
+
+      <section class="mt-3">
+        <h4>Advanced Usage</h4>
+        <h5>Custom File System</h5>
+        <p>Anda dapat membuat custom fake filesystem:</p>
+        <pre><code># Edit filesystem
+nano share/cowrie/fs.pickle
+</code></pre>
+
+        <h5>Database Integration</h5>
+        <p>Cowrie dapat menyimpan data ke database:</p>
+        <pre><code># Edit etc/cowrie.cfg
+[output_mysql]
+enabled = true
+host = localhost
+database = cowrie
+username = cowrie
+password = password
+</code></pre>
       </section>
 
       <div class="mt-4"><a class="btn btn-outline-primary" href="tools.html">← Kembali ke Security Tools</a></div>

