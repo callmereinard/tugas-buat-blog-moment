@@ -10,27 +10,78 @@
   <body>
     <header class="header-area"><div class="container py-3"><a href="index.html" class="logo text-decoration-none"><h1 class="m-0">Blog Praktikum</h1></a></div></header>
     <main class="section"><div class="container">
-      <h1>Metasploitable 2 — Studi Kasus</h1>
-      <p class="lead">Panduan ringkas menggunakan Metasploitable 2 hanya dalam lab terisolasi: fokus pada observabilitas dan mitigasi, bukan eksploitasi publik.</p>
+      <h1>Metasploitable 2 — Studi Kasus (Lab Aman)</h1>
+      <p class="lead">Konten tambahan telah disusun ulang: hanya untuk lingkungan terisolasi. Fokus pada setup, observabilitas, dan pemahaman layanan rentan, tanpa instruksi eksploitasi.</p>
 
-      <h4>Tujuan Riset</h4>
-      <ul>
-        <li>Mengumpulkan bukti (pcap, log) untuk memahami chain serangan.</li>
-        <li>Menguji deteksi IDS/EDR dan tuning rule set.</li>
-        <li>Mempraktikkan hardening dan rollback setelah eksperimen.</li>
-      </ul>
+      <section class="mt-3">
+        <h4>Informasi Lab</h4>
+        <ul>
+          <li><strong>VM:</strong> Metasploitable 2 (Ubuntu 8.04)</li>
+          <li><strong>Tujuan:</strong> Image sengaja rentan untuk pelatihan keamanan</li>
+          <li><strong>Kesulitan:</strong> Pemula</li>
+        </ul>
+      </section>
 
-      <h4>Ringkasan dari Arsip (Non-aksi)</h4>
-      <ul>
-        <li>Gunakan jaringan host-only dan snapshot VM sebelum uji.</li>
-        <li>Lakukan enumerasi service untuk memetakan permukaan serangan.</li>
-        <li>Catat hasil ke dalam log book: service, versi, dan rekomendasi patch.</li>
-      </ul>
+      <section class="mt-3">
+        <h4>Setup &amp; Instalasi</h4>
+        <ul>
+          <li>Unduh dari SourceForge: <a href="https://sourceforge.net/projects/metasploitable/" target="_blank" rel="noopener">Metasploitable 2</a></li>
+          <li>Ekstrak arsip dan impor ke VirtualBox: <em>File → Import Appliance</em></li>
+        </ul>
+      </section>
 
-      <h5>Bacaan Lanjutan</h5>
-      <ul>
-        <li><a href="https://cainvsilf.github.io/cainvsilf-archive/labs/metasploitable2/" target="_blank" rel="noopener">Arsip: Metasploitable 2</a></li>
-      </ul>
+      <section class="mt-3">
+        <h4>Enumerasi &amp; Reconnaissance</h4>
+        <p>Lakukan pemindaian servis untuk memetakan permukaan serangan (lab-only):</p>
+        <pre><code># Contoh pemindaian versi layanan
+nmap -sV -p- &lt;IP_Metasploitable&gt;
+
+# Cuplikan output umum (ilustrasi)
+PORT     STATE SERVICE     VERSION
+21/tcp   open  ftp         vsftpd 2.3.4
+22/tcp   open  ssh         OpenSSH 4.7p1
+23/tcp   open  telnet      Linux telnetd
+80/tcp   open  http        Apache httpd
+139/tcp  open  netbios-ssn Samba smbd 3.X
+445/tcp  open  netbios-ssn Samba smbd 3.X
+3306/tcp open  mysql       MySQL
+</code></pre>
+        <p>Gunakan hasil enumerasi untuk memahami layanan yang lemah dan menyiapkan deteksi/mitigasi.</p>
+      </section>
+
+      <section class="mt-3">
+        <h4>Layanan Penting &amp; Catatan Keamanan</h4>
+        <ul>
+          <li><strong>FTP vsftpd 2.3.4:</strong> versi historis dengan isu keamanan terdokumentasi.</li>
+          <li><strong>Samba:</strong> periksa konfigurasi dan praktik kredensial.</li>
+          <li><strong>UnrealIRCd/Tomcat:</strong> layanan default dan hardening diperlukan.</li>
+          <li><strong>MySQL:</strong> lakukan audit kebijakan password dan hak akses.</li>
+          <li><strong>Aplikasi Web (Mutillidae, DVWA):</strong> gunakan untuk belajar deteksi dan mitigasi (lab-only).</li>
+        </ul>
+      </section>
+
+      <section class="mt-3">
+        <h4>Observabilitas &amp; Hardening</h4>
+        <ul>
+          <li>Kumpulkan <strong>pcap</strong>, <strong>log aplikasi</strong>, dan <strong>snapshot VM</strong> sebelum/selesai eksperimen.</li>
+          <li>Tambah <strong>IDS rules</strong> untuk pola scan dan anomali autentikasi.</li>
+          <li>Terapkan <strong>least privilege</strong> dan <strong>patching</strong> pada layanan yang diuji.</li>
+        </ul>
+      </section>
+
+      <section class="mt-3">
+        <h4>Checklist Lab</h4>
+        <ul>
+          <li>[x] Pemindaian jaringan dasar dengan Nmap</li>
+          <li>[ ] Review layanan utama (FTP, Samba, IRC, HTTP, DB)</li>
+          <li>[ ] Uji deteksi IDS untuk skenario umum</li>
+          <li>[ ] Dokumentasi temuan dan rekomendasi mitigasi</li>
+        </ul>
+      </section>
+
+      <div class="alert alert-warning mt-4" role="alert">
+        <strong>Pengingat:</strong> Metasploitable 2 sangat rentan. Jangan pernah expose ke internet. Gunakan hanya pada jaringan terisolasi.
+      </div>
 
       <div class="mt-4"><a class="btn btn-outline-primary" href="labs.html">← Kembali ke Labs &amp; CTF</a></div>
     </div></main>

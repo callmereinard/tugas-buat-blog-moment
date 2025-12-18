@@ -10,26 +10,90 @@
   <body>
     <header class="header-area"><div class="container py-3"><a href="index.html" class="logo text-decoration-none"><h1 class="m-0">Blog Praktikum</h1></a></div></header>
     <main class="section"><div class="container">
-      <h1>Cowrie — Honeypot</h1>
-      <p class="lead">Cowrie dapat digunakan untuk mempelajari teknik serangan terhadap layanan SSH/Telnet di lingkungan terkontrol.</p>
+      <h1>Cowrie — Honeypot (Panduan Ringkas)</h1>
+      <p class="lead">Materi tambahan telah dirapikan: fitur utama, instalasi, konfigurasi, penggunaan, logging, dan troubleshooting untuk lab terisolasi.</p>
 
-      <h4>Catatan Keamanan</h4>
-      <ul>
-        <li>Jangan pasang honeypot pada jaringan produksi tanpa isolasi dan pemantauan yang kuat.</li>
-        <li>Pastikan data dari honeypot dikumpulkan dan dianonimkan jika diperlukan.</li>
-      </ul>
+      <section class="mt-3">
+        <h4>Overview &amp; Fitur</h4>
+        <ul>
+          <li>SSH/Telnet Honeypot: emulasi layanan dan interaksi penyerang.</li>
+          <li>Command Logging &amp; Session Recording.</li>
+          <li>Fake File System &amp; File Download Capture.</li>
+        </ul>
+      </section>
 
-      <h4>Ringkasan dari Arsip (Non-aksi)</h4>
-      <ul>
-        <li>Cowrie mencatat brute-force dan perintah yang dijalankan ke layanan SSH/Telnet emulasi.</li>
-        <li>Log penting: <code>cowrie.log</code> (text), <code>cowrie.json</code> (JSON), dan rekaman sesi pada <code>var/lib/cowrie/tty/</code>.</li>
-        <li>Gunakan alias/log viewer untuk analisis cepat, tetap pada jaringan terisolasi.</li>
-      </ul>
+      <section class="mt-3">
+        <h4>Instalasi (Ringkas)</h4>
+        <pre><code># Clone versi stabil
+git clone -b v2.4.0 https://github.com/cowrie/cowrie
+cd cowrie
 
-      <h5>Bacaan Lanjutan</h5>
-      <ul>
-        <li><a href="https://cainvsilf.github.io/cainvsilf-archive/tools/cowrie/" target="_blank" rel="noopener">Arsip: Cowrie Honeypot</a></li>
-      </ul>
+# Virtual environment (Linux/macOS)
+python3 -m venv cowrie-env
+source cowrie-env/bin/activate
+
+# Virtual environment (Windows PowerShell)
+python -m venv cowrie-env
+.\cowrie-env\Scripts\Activate.ps1
+
+# Dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
+pip install -e .
+</code></pre>
+      </section>
+
+      <section class="mt-3">
+        <h4>Konfigurasi Dasar</h4>
+        <pre><code>[honeypot]
+hostname = server
+listen_endpoints = tcp:2222:interface=0.0.0.0
+
+[output_json]
+enabled = true
+</code></pre>
+        <p>Opsional: port-forwarding ke 22 pada host (Linux) dengan iptables di lab terisolasi.</p>
+      </section>
+
+      <section class="mt-3">
+        <h4>Penggunaan</h4>
+        <pre><code># Start/Stop/Status
+cowrie start
+cowrie stop
+cowrie status
+</code></pre>
+        <p>Anda dapat membuat skrip/alias untuk restart cepat dan melihat log real-time.</p>
+      </section>
+
+      <section class="mt-3">
+        <h4>Lokasi Log &amp; Analisis</h4>
+        <ul>
+          <li>Main Log: <em>var/log/cowrie/cowrie.log</em>; JSON: <em>var/log/cowrie/cowrie.json</em></li>
+          <li>Downloads: <em>var/lib/cowrie/downloads/</em>; TTY: <em>var/lib/cowrie/tty/</em></li>
+        </ul>
+        <pre><code># Contoh analisis dengan jq (Linux)
+cat var/log/cowrie/cowrie.json | jq 'select(.eventid=="cowrie.login.success")'
+cat var/log/cowrie/cowrie.json | jq 'select(.eventid=="cowrie.command.input")'
+</code></pre>
+      </section>
+
+      <section class="mt-3">
+        <h4>Troubleshooting (Umum)</h4>
+        <ul>
+          <li>Port in use: periksa dengan <em>netstat</em> dan hentikan proses terkait.</li>
+          <li>Permission: jalankan sebagai non-root; cek izin file environment.</li>
+          <li>Virtualenv hilang: buat ulang venv dan install ulang dependencies.</li>
+        </ul>
+      </section>
+
+      <section class="mt-3">
+        <h4>Best Practices Keamanan</h4>
+        <ul>
+          <li>Jalankan di segment jaringan terisolasi; jangan di produksi.</li>
+          <li>Monitor dan backup log secara berkala.</li>
+          <li>Batasi akses dan amankan storage log.</li>
+        </ul>
+      </section>
 
       <div class="mt-4"><a class="btn btn-outline-primary" href="tools.html">← Kembali ke Security Tools</a></div>
     </div></main>

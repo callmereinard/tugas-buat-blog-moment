@@ -10,27 +10,72 @@
   <body>
     <header class="header-area"><div class="container py-3"><a href="index.html" class="logo text-decoration-none"><h1 class="m-0">Blog Praktikum</h1></a></div></header>
     <main class="section"><div class="container">
-      <h1>Wazuh — SIEM &amp; Integrasi Log</h1>
-      <p class="lead">Ringkasan bagaimana menggunakan Wazuh untuk mengumpulkan log host, korelasi event, dan membuat alert untuk insiden keamanan.</p>
+      <h1>Wazuh — SIEM &amp; Monitoring (Ringkas)</h1>
+      <p class="lead">Materi tambahan disusun ulang untuk lab: arsitektur Wazuh, langkah instalasi inti, konfigurasi, dan praktik aman.</p>
 
-      <h4>Penggunaan</h4>
-      <ul>
-        <li>Kumpulkan log dari host, IDS, dan aplikasi.</li>
-        <li>Buat rule korelasi untuk alert pada pola yang mencurigakan.</li>
-        <li>Gunakan dashboards untuk analisis historis dan response playbooks.</li>
-      </ul>
+      <section class="mt-3">
+        <h4>Arsitektur</h4>
+        <ul>
+          <li><strong>Wazuh Manager:</strong> menerima dan menganalisis data dari agent.</li>
+          <li><strong>Wazuh Agent:</strong> dikinstal di endpoint untuk mengirim log.</li>
+          <li><strong>Elastic Stack:</strong> Elasticsearch + Kibana untuk indexing dan visualisasi.</li>
+        </ul>
+      </section>
 
-      <h4>Ringkasan dari Arsip (Non-aksi)</h4>
-      <ul>
-        <li>Komponen umum: Wazuh Manager, Agent, dan Elastic Stack (Elasticsearch + Kibana).</li>
-        <li>Gunakan integrasi aman (contoh: Slack) hanya di lab dan pastikan kredensial disimpan dengan baik.</li>
-        <li>Best practice: batasi akses dashboard, aktifkan HTTPS, dan lakukan backup berkala.</li>
-      </ul>
+      <section class="mt-3">
+        <h4>Instalasi Inti (Debian/Ubuntu)</h4>
+        <pre><code># Tambah repository Wazuh (ringkas)
+echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" | \
+sudo tee -a /etc/apt/sources.list.d/wazuh.list
 
-      <h5>Bacaan Lanjutan</h5>
-      <ul>
-        <li><a href="https://cainvsilf.github.io/cainvsilf-archive/tools/wazuh/" target="_blank" rel="noopener">Arsip: Wazuh SIEM</a></li>
-      </ul>
+sudo apt update
+sudo apt install wazuh-manager filebeat -y
+
+# Elasticsearch & Kibana (versi sesuai lingkungan)
+sudo apt install elasticsearch -y
+sudo systemctl enable --now elasticsearch
+
+# Install Kibana dan plugin Wazuh (contoh versi)
+sudo dpkg -i kibana-7.17.13-amd64.deb
+sudo -u kibana /usr/share/kibana/bin/kibana-plugin install file:///path/to/wazuh_kibana.zip
+</code></pre>
+        <p>Sesuaikan versi dan repository sesuai dokumentasi resmi Wazuh/Elastic.</p>
+      </section>
+
+      <section class="mt-3">
+        <h4>Konfigurasi &amp; Agen</h4>
+        <ul>
+          <li>Konfigurasi dasar di <em>/var/ossec/etc/ossec.conf</em> (output JSON, syslog, rules).</li>
+          <li>Registrasi agent via <em>manage_agents</em> dan <em>wazuh-agent</em> pada endpoint.</li>
+          <li>Gunakan <em>Filebeat</em> template dari Wazuh untuk pipeline Elastic.</li>
+        </ul>
+      </section>
+
+      <section class="mt-3">
+        <h4>Operasional &amp; Troubleshooting</h4>
+        <pre><code># Service (contoh)
+sudo systemctl status wazuh-manager
+sudo systemctl status elasticsearch
+sudo systemctl status kibana
+
+# Log
+sudo tail -f /var/ossec/logs/ossec.log
+sudo journalctl -u wazuh-manager -f
+</code></pre>
+        <ul>
+          <li>Pastikan memori heap Elasticsearch disetel sesuai host.</li>
+          <li>Verifikasi konektivitas agent (port 1514) dan firewall.</li>
+        </ul>
+      </section>
+
+      <section class="mt-3">
+        <h4>Praktik Aman</h4>
+        <ul>
+          <li>Ubah kredensial default; aktifkan HTTPS untuk Kibana.</li>
+          <li>Restriksi akses dashboard; backup konfigurasi dan indeks.</li>
+          <li>Integrasi Slack/VirusTotal hanya di lab dan amankan API keys.</li>
+        </ul>
+      </section>
 
       <div class="mt-4"><a class="btn btn-outline-primary" href="tools.html">← Kembali ke Security Tools</a></div>
     </div></main>

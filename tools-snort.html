@@ -10,25 +10,41 @@
   <body>
     <header class="header-area"><div class="container py-3"><a href="index.html" class="logo text-decoration-none"><h1 class="m-0">Blog Praktikum</h1></a></div></header>
     <main class="section"><div class="container">
-      <h1>Snort — Rule &amp; Penjelasan</h1>
-      <p class="lead">Contoh rule yang digunakan untuk monitoring di lab serta tips tuning untuk mengurangi false positive.</p>
+      <h1>Snort — Rule Contoh &amp; Running di Lab</h1>
+      <p class="lead">Konten tambahan dirapikan: sintaks dasar, contoh rule deteksi, dan cara menjalankan Snort di lingkungan lab.</p>
 
-      <h4>Contoh Rule</h4>
-      <pre><code>alert tcp any any -> 192.168.56.101 80 (msg:"POTENTIAL SQL KEYWORD in HTTP"; content:"select"; nocase; http_client_body; sid:1000001; rev:1;)
+      <section class="mt-3">
+        <h4>Sintaks Dasar</h4>
+        <pre><code>alert [protocol] [src_ip] [src_port] -&gt; [dst_ip] [dst_port] (rule options)</code></pre>
+      </section>
+
+      <section class="mt-3">
+        <h4>Contoh Rule Deteksi</h4>
+        <pre><code># Deteksi Nmap SYN Scan
+alert tcp any any -&gt; any any (msg:"Nmap SYN Scan Detected"; flags:S; sid:1000001; rev:1;)
+
+# Deteksi ICMP Flood
+alert icmp any any -&gt; any any (msg:"HPING3 ICMP Flood Detected"; sid:1000004; rev:1;)
+
+# Heuristik kata kunci SQL di HTTP body (lab-only)
+alert tcp any any -&gt; 192.168.56.101 80 (msg:"Potential SQL keyword"; content:"select"; nocase; http_client_body; sid:1000010; rev:1;)
 </code></pre>
-      <p>Aturan ini bersifat heuristik. Lakukan tuning (threshold, whitelist) dan uji di lab sebelum disebarkan ke produksi.</p>
+        <p>Lakukan tuning (threshold, whitelist) dan uji di lab sebelum dipakai luas untuk mengurangi false positive.</p>
+      </section>
 
-      <h4>Ringkasan dari Arsip (Non-aksi)</h4>
-      <ul>
-        <li>Snort digunakan untuk analisis trafik real-time dan logging paket.</li>
-        <li>Struktur konfigurasi umum: <code>snort.lua</code> dan direktori <code>rules/</code> untuk <code>local.rules</code>.</li>
-        <li>Untuk lab, jalankan mode monitor dan evaluasi alert, hindari konfigurasi blocking di jaringan produksi.</li>
-      </ul>
+      <section class="mt-3">
+        <h4>Menjalankan Snort (Lab)</h4>
+        <pre><code>sudo snort -c /etc/snort/snort.lua -R /etc/snort/rules/local.rules -i eth0 -A alert_fast</code></pre>
+        <p>Gunakan mode <em>alert_fast</em> untuk melihat ringkas alert; pastikan interface dan path sesuai lingkungan Anda.</p>
+      </section>
 
-      <h5>Bacaan Lanjutan</h5>
-      <ul>
-        <li><a href="https://cainvsilf.github.io/cainvsilf-archive/tools/snort/" target="_blank" rel="noopener">Arsip: Snort IDS</a></li>
-      </ul>
+      <section class="mt-3">
+        <h4>Ringkasan</h4>
+        <ul>
+          <li>Konfigurasi umum: <code>snort.lua</code> dan <code>rules/local.rules</code>.</li>
+          <li>Gunakan lab terisolasi untuk evaluasi alert dan tuning aturan.</li>
+        </ul>
+      </section>
 
       <div class="mt-4"><a class="btn btn-outline-primary" href="tools.html">← Kembali ke Security Tools</a></div>
     </div></main>
