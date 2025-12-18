@@ -3,42 +3,93 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Nmap — Panduan Singkat</title>
+    <title>Nmap — Network Mapper</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <header class="header-area"><div class="container py-3"><a href="index.html" class="logo text-decoration-none"><h1 class="m-0">Blog Praktikum</h1></a></div></header>
     <main class="section"><div class="container">
-      <h1>Nmap — Pengantar &amp; Contoh Aman</h1>
-      <p class="lead">Nmap adalah alat discovery; contoh perintah untuk lab dan interpretasi hasil.</p>
+      <h1>Nmap — Network Mapper</h1>
+      <p class="lead">Panduan lengkap Nmap: tipe scan, port specification, kombinasi command yang berguna, dan contoh penggunaan untuk lab terisolasi.</p>
 
-      <h4>Contoh Perintah</h4>
-      <pre><code># scanning service versi (lab)
-nmap -sV -p 22,80,443 192.168.56.101
+      <section class="mt-3">
+        <h4>Tool Information</h4>
+        <ul>
+          <li><strong>Type:</strong> Network Scanner</li>
+          <li><strong>Purpose:</strong> Port scanning &amp; service detection</li>
+          <li><strong>Difficulty:</strong> ⭐ Beginner</li>
+        </ul>
+      </section>
+
+      <section class="mt-3">
+        <h4>Basic Scans</h4>
+        <p>Perintah dasar untuk memulai scanning:</p>
+        <pre><code># Simple scan
+$ nmap 192.168.1.1
+
+# Scan range
+$ nmap 192.168.1.1-254
+
+# Scan subnet
+$ nmap 192.168.1.0/24
+
+# Scan from file
+$ nmap -iL targets.txt
 </code></pre>
-      <p>Interpretasi: lihat versi service dan banner untuk menentukan apakah komponen perlu patching atau hardening.</p>
+      </section>
 
-      <div class="mt-4"><a class="btn btn-outline-primary" href="tools.html">← Kembali ke Security Tools</a></div>
-    </div></main>
-    <footer class="mt-5"><div class="container text-center small">&copy; 2025 Reinardus</div></footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
-</html>
-<!DOCTYPE html>
-<html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Nmap — Tools</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header class="header-area"><div class="container py-3"><a href="index.html" class="logo text-decoration-none"><h1 class="m-0">Blog Praktikum</h1></a></div></header>
-    <main class="section"><div class="container">
-      <h1>Nmap — Network Discovery &amp; Scanning</h1>
-      <p class="lead">Nmap adalah alat penting untuk enumerasi jaringan. Halaman ini membahas strategi scanning etis, fingerprinting, dan bagaimana hasil scan dimanfaatkan untuk memicu riset lebih lanjut.</p>
+      <section class="mt-3">
+        <h4>Scan Types</h4>
+        <p>Berbagai metode scanning untuk keperluan berbeda:</p>
+        <pre><code># TCP SYN scan (default)
+$ nmap -sS 192.168.1.1
+
+# TCP connect scan
+$ nmap -sT 192.168.1.1
+
+# UDP scan
+$ nmap -sU 192.168.1.1
+
+# Version detection
+$ nmap -sV 192.168.1.1
+
+# OS detection
+$ nmap -O 192.168.1.1
+
+# Aggressive scan
+$ nmap -A 192.168.1.1
+</code></pre>
+      </section>
+
+      <section class="mt-3">
+        <h4>Port Specification</h4>
+        <p>Kontrol port mana yang akan dipindai:</p>
+        <pre><code># Specific ports
+$ nmap -p 80,443 192.168.1.1
+
+# Port range
+$ nmap -p 1-1000 192.168.1.1
+
+# All ports
+$ nmap -p- 192.168.1.1
+
+# Top ports
+$ nmap --top-ports 100 192.168.1.1
+</code></pre>
+      </section>
+
+      <section class="mt-3">
+        <h4>Useful Combinations</h4>
+        <p>Kombinasi perintah yang praktis untuk berbagai skenario:</p>
+        <pre><code># Full scan with version detection
+$ nmap -sV -sC -p- -T4 192.168.1.1
+
+# Save output
+$ nmap -sV -oA scan_results 192.168.1.1
+# Creates: scan_results.nmap, .xml, .gnmap
+</code></pre>
+      </section>
 
       <section class="mt-3">
         <h4>Prinsip Operasional</h4>
@@ -46,8 +97,16 @@ nmap -sV -p 22,80,443 192.168.56.101
           <li>Gunakan scanning yang bertanggung jawab: batasi kecepatan, scope, dan hanya pada aset yang diizinkan.</li>
           <li>Fingerprinting versi dapat membantu memprioritaskan patching dan mitigasi.</li>
           <li>Gabungkan hasil dengan sumber threat intel dan CVE untuk analisis risiko.</li>
+          <li>Interpretasi: lihat versi service dan banner untuk menentukan apakah komponen perlu patching atau hardening.</li>
         </ul>
       </section>
+
+      <div class="mt-4"><a class="btn btn-outline-primary" href="tools.html">← Kembali ke Security Tools</a></div>
+    </div></main>
+    <footer class="mt-5"><div class="container text-center small">&copy; 2025 Reinardus</div></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
 
       <div class="mt-4"><a class="btn btn-outline-primary" href="tools.html">← Kembali ke Tools</a></div>
     </div></main>
